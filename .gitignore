@@ -1,0 +1,4 @@
+typings/*
+typings
+*.json
+js/mobile.js
