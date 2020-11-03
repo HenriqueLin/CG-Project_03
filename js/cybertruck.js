@@ -1,9 +1,9 @@
-var scene, renderer, cameras = [], currentCamera;
+var scene,
+  renderer,
+  cameras = [],
+  currentCamera;
 var keymap = {};
 var clock, delta_t;
-
-const rotationSpeed = Math.PI / 2;
-const cameraSize = 30;
 
 function createFloor() {
   "use strict";
@@ -39,7 +39,7 @@ function createScene() {
   "use strict";
 
   scene = new THREE.Scene();
-  scene.add(new THREE.AxisHelper(3));
+  scene.add(new THREE.AxesHelper(10));
 
   // TODO: add floor
   // TODO: add global light
@@ -71,7 +71,7 @@ function init() {
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
   // set background color
-  renderer.setClearColor(0x282c34, 1)
+  renderer.setClearColor(0x282c34, 1);
   document.body.appendChild(renderer.domElement);
 
   // create the clock, scene and cameras
@@ -96,7 +96,6 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-
 function onKeyDown(e) {
   "use strict";
   switch (e.code) {
@@ -119,7 +118,7 @@ function onKeyDown(e) {
       // TODO: switch to side camera
       break;
 
-    // rotate 
+    // rotate
     case "ArrowLeft":
     case "ArrowRight":
       keymap[e.code] = true;
