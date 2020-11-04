@@ -7,7 +7,13 @@ var clock, delta_t;
 
 function createFloor() {
   "use strict";
-  // TODO:
+  // TODO: another 2 types of material
+  var mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(500, 500),
+    new THREE.MeshBasicMaterial({ color: 0xdcdfe4 })
+  )
+  mesh.rotateX(-Math.PI / 2);
+  scene.add(mesh);
 }
 
 function createpodium() {
@@ -41,7 +47,7 @@ function createScene() {
   scene = new THREE.Scene();
   scene.add(new THREE.AxesHelper(10));
 
-  // TODO: add floor
+  createFloor();
   // TODO: add global light
   // TODO: add cybertruck
   // TODO: add podium
@@ -54,8 +60,13 @@ function createCameras() {
   // TODO: create a PerspectiveCamera looking from top
   // TODO: create a OrthographicCamera looking from side
 
+  // temporarily camera
+  var camera = new THREE.PerspectiveCamera();
+  camera.position.set(100, 50, 100);
+  camera.lookAt(scene.position);
+  cameras.push(camera);
   // set the default camera
-  // currentCamera = cameras[0];
+  currentCamera = cameras[0];
 }
 
 
