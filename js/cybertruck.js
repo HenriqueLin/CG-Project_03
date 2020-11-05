@@ -4,7 +4,7 @@ var scene,
   currentCamera;
 var keymap = {};
 var clock, delta_t;
-const cameraSize = 500
+var globalLight, spotlights = [];
 var podium;
 
 const cameraSize = 500, rotateSpeed = Math.PI / 3
@@ -37,14 +37,41 @@ function createCybertruck() {
   // TODO: chassis, body, window
 }
 
-function createSpotlight() {
+function createSpotlights() {
+  createSpotlight(150, 150, 0, podium)
+  createSpotlight(-Math.sin(Math.PI / 6) * 150, 150, Math.cos(Math.PI / 6) * 150, podium)
+  createSpotlight(-Math.sin(Math.PI / 6) * 150, 150, -Math.cos(Math.PI / 6) * 150, podium)
+
+}
+
+function createSpotlight(x, y, z, target) {
   "use strict";
   // TODO:
+  var spotlight = new THREE.Object3D();
+  var sphere = new THREE.Mesh(
+    new THREE.SphereGeometry(10, 32, 32),
+    new THREE.MeshBasicMaterial({ color: 0xFFc379 }))
+
+  var cone = new THREE.Mesh(
+    new THREE.ConeGeometry(10.5, 20, 16),
+    new THREE.MeshBasicMaterial({ color: 0x98c379 }))
+  spotlight.add(sphere, cone)
+  cone.rotateX(-Math.PI / 2)
+  cone.position.set(0, 0, 10)
+  spotlight.position.set(x, y, z)
+  spotlight.lookAt(target.position)
+  var light = new THREE.SpotLight(0xffffff, 1, 300, 0.5,)
+  scene.add(new THREE.SpotLightHelper(light))
+  light.lookAt(target.position)
+  spotlight.add(light)
+  spotlights.push(light)
+  scene.add(spotlight)
 }
 
 function createGlobalLight() {
   "use strict";
-  // TODO:
+  globalLight = new THREE.DirectionalLight(0xffc98e, 0.8);
+  scene.add(globalLight);
 }
 
 function createClock() {
@@ -59,10 +86,10 @@ function createScene() {
   scene.add(new THREE.AxesHelper(10));
 
   createFloor();
-  // TODO: add global light
+  createGlobalLight();
   // TODO: add cybertruck
   createPodium();
-  // TODO: add spotlight 
+  createSpotlights();
 }
 
 
@@ -133,15 +160,14 @@ function animate() {
 function onKeyDown(e) {
   "use strict";
   switch (e.code) {
-    // change camera
     case "Digit1":
-      // TODO: turn off/on the 1st spotlight
+      spotlights[0].visible = !spotlights[0].visible
       break;
     case "Digit2":
-      // TODO: turn off/on the 2nd spotlight
+      spotlights[1].visible = !spotlights[1].visible
       break;
     case "Digit3":
-      // TODO: turn off/on the 3rd spotlight
+      spotlights[2].visible = !spotlights[2].visible
       break;
 
     case "Digit4":
@@ -159,7 +185,7 @@ function onKeyDown(e) {
       break;
 
     case "KeyQ":
-      // TODO: turn off/on global illumination
+      globalLight.visible = !globalLight.visible
       break;
     case "KeyW":
       // TODO: turn off/on calculate of illumination
