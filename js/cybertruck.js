@@ -7,16 +7,21 @@ var clock, delta_t;
 var globalLight, spotlights = [];
 var podium;
 
-const cameraSize = 500, rotateSpeed = Math.PI / 3
+const cameraSize = 300, rotateSpeed = Math.PI / 3;
+const floorSize = 500, floorColor = 0xdcdfe4, floorShininess = 5;
+const podiumRadius = 100, podiumHeight = 30, podiumColor = 0xc678dd, podiumShininess = 10;
+const spotHeight = 100, spotDistance = 150;
+const spotlightIntensity = 1.5, spotlightDistance = 300, spotlightAngle = 0.5, spotlightColor = 0xffffff;
+const globalLightColor = 0xffffff, globalLightIntensity = 0.5;
+const pCameraPosition = new THREE.Vector3(300, 300, 300), oCameraPosition = new THREE.Vector3(0, 50, 500);
 
 function createFloor() {
   "use strict";
-  // TODO: another 2 types of material
-  var basic = new THREE.MeshBasicMaterial({ color: 0xdcdfe4 })
-  var lambert = new THREE.MeshLambertMaterial({ color: 0xdcdfe4 })
-  var phong = new THREE.MeshPhongMaterial({ color: 0xdcdfe4, specular: 0x111111, shininess: 5 })
+  var basic = new THREE.MeshBasicMaterial({ color: floorColor })
+  var lambert = new THREE.MeshLambertMaterial({ color: floorColor })
+  var phong = new THREE.MeshPhongMaterial({ color: floorColor, shininess: floorShininess })
   var mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(500, 500),
+    new THREE.PlaneGeometry(floorSize, floorSize),
     phong)
   mesh.userData = { basic: basic, lambert: lambert, phong: phong }
 
@@ -27,14 +32,14 @@ function createFloor() {
 function createPodium() {
   "use strict";
   podium = new THREE.Object3D()
-  var basic = new THREE.MeshBasicMaterial({ color: 0xc678dd })
-  var lambert = new THREE.MeshLambertMaterial({ color: 0xc678dd })
-  var phong = new THREE.MeshPhongMaterial({ color: 0xc678dd, specular: 0x111111, shininess: 10 })
+  var basic = new THREE.MeshBasicMaterial({ color: podiumColor })
+  var lambert = new THREE.MeshLambertMaterial({ color: podiumColor })
+  var phong = new THREE.MeshPhongMaterial({ color: podiumColor, shininess: podiumShininess })
   var mesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(100, 100, 30, 32, 32),
+    new THREE.CylinderGeometry(podiumRadius, podiumRadius, podiumHeight, 32, 32),
     phong)
   mesh.userData = { basic: basic, lambert: lambert, phong: phong }
-  mesh.position.set(0, 15, 0)
+  mesh.position.set(0, podiumHeight / 2, 0)
   podium.add(mesh)
   scene.add(podium)
 }
@@ -45,9 +50,9 @@ function createCybertruck() {
 }
 
 function createSpotlights() {
-  createSpotlight(150, 150, 0, podium)
-  createSpotlight(-Math.sin(Math.PI / 6) * 150, 150, Math.cos(Math.PI / 6) * 150, podium)
-  createSpotlight(-Math.sin(Math.PI / 6) * 150, 150, -Math.cos(Math.PI / 6) * 150, podium)
+  createSpotlight(spotDistance, spotHeight, 0, podium)
+  createSpotlight(-Math.sin(Math.PI / 6) * spotDistance, spotHeight, Math.cos(Math.PI / 6) * spotDistance, podium)
+  createSpotlight(-Math.sin(Math.PI / 6) * spotDistance, spotHeight, -Math.cos(Math.PI / 6) * spotDistance, podium)
 
 }
 
@@ -67,7 +72,7 @@ function createSpotlight(x, y, z, target) {
   cone.position.set(0, 0, 10)
   spotlight.position.set(x, y, z)
   spotlight.lookAt(target.position)
-  var light = new THREE.SpotLight(0xffffff, 1, 300, 0.5,)
+  var light = new THREE.SpotLight(spotlightColor, spotlightIntensity, spotlightDistance, spotlightAngle)
   scene.add(new THREE.SpotLightHelper(light))
   light.lookAt(target.position)
   spotlight.add(light)
@@ -77,7 +82,7 @@ function createSpotlight(x, y, z, target) {
 
 function createGlobalLight() {
   "use strict";
-  globalLight = new THREE.DirectionalLight(0xffc98e, 0.8);
+  globalLight = new THREE.DirectionalLight(globalLightColor, globalLightIntensity);
   scene.add(globalLight);
 }
 
@@ -105,7 +110,7 @@ function createCameras() {
   var aspect = window.innerWidth / window.innerHeight;
   // PerspectiveCamera looking from top
   var camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
-  camera.position.set(0, 500, 0);
+  camera.position.copy(pCameraPosition);
   camera.lookAt(scene.position);
   cameras.push(camera);
   // OrthographicCamera looking from side
@@ -117,7 +122,7 @@ function createCameras() {
     1,
     1000
   );
-  camera.position.set(0, 50, 500);
+  camera.position.copy(oCameraPosition);
   // FIXME: look to the podium's position
   camera.lookAt(scene.position);
   cameras.push(camera);
@@ -214,7 +219,6 @@ function onKeyUp(e) {
 }
 
 function rotation() {
-  // TODO: Rotate the podium
   if (keymap["ArrowLeft"]) {
     podium.rotateY(-rotateSpeed * delta_t);
   }
