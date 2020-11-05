@@ -5,6 +5,9 @@ var scene,
 var keymap = {};
 var clock, delta_t;
 const cameraSize = 500
+var podium;
+
+const cameraSize = 500, rotateSpeed = Math.PI / 3
 
 function createFloor() {
   "use strict";
@@ -19,12 +22,14 @@ function createFloor() {
 
 function createPodium() {
   "use strict";
+  podium = new THREE.Object3D()
   var mesh = new THREE.Mesh(
     new THREE.CylinderGeometry(100, 100, 30, 32, 32),
     new THREE.MeshBasicMaterial({ color: 0xc678dd })
   )
   mesh.position.set(0, 15, 0)
-  scene.add(mesh)
+  podium.add(mesh)
+  scene.add(podium)
 }
 
 function createCybertruck() {
@@ -177,6 +182,12 @@ function onKeyUp(e) {
 
 function rotation() {
   // TODO: Rotate the podium
+  if (keymap["ArrowLeft"]) {
+    podium.rotateY(-rotateSpeed * delta_t);
+  }
+  if (keymap["ArrowRight"]) {
+    podium.rotateY(rotateSpeed * delta_t);
+  }
 }
 
 function onResize() {
