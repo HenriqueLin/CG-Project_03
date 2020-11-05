@@ -12,10 +12,14 @@ const cameraSize = 500, rotateSpeed = Math.PI / 3
 function createFloor() {
   "use strict";
   // TODO: another 2 types of material
+  var basic = new THREE.MeshBasicMaterial({ color: 0xdcdfe4 })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0xdcdfe4 })
+  var phong = new THREE.MeshPhongMaterial({ color: 0xdcdfe4, specular: 0x111111, shininess: 5 })
   var mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(500, 500),
-    new THREE.MeshBasicMaterial({ color: 0xdcdfe4 })
-  )
+    phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
+
   mesh.rotateX(-Math.PI / 2);
   scene.add(mesh);
 }
@@ -23,10 +27,13 @@ function createFloor() {
 function createPodium() {
   "use strict";
   podium = new THREE.Object3D()
+  var basic = new THREE.MeshBasicMaterial({ color: 0xc678dd })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0xc678dd })
+  var phong = new THREE.MeshPhongMaterial({ color: 0xc678dd, specular: 0x111111, shininess: 10 })
   var mesh = new THREE.Mesh(
     new THREE.CylinderGeometry(100, 100, 30, 32, 32),
-    new THREE.MeshBasicMaterial({ color: 0xc678dd })
-  )
+    phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
   mesh.position.set(0, 15, 0)
   podium.add(mesh)
   scene.add(podium)
