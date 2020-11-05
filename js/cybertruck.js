@@ -4,6 +4,7 @@ var scene,
   currentCamera;
 var keymap = {};
 var clock, delta_t;
+const cameraSize = 500
 
 function createFloor() {
   "use strict";
@@ -62,14 +63,26 @@ function createScene() {
 
 function createCameras() {
   "use strict";
-  // TODO: create a PerspectiveCamera looking from top
-  // TODO: create a OrthographicCamera looking from side
-
-  // temporarily camera
-  var camera = new THREE.PerspectiveCamera();
-  camera.position.set(1000, 500, 1000);
+  var aspect = window.innerWidth / window.innerHeight;
+  // PerspectiveCamera looking from top
+  var camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
+  camera.position.set(0, 500, 0);
   camera.lookAt(scene.position);
   cameras.push(camera);
+  // OrthographicCamera looking from side
+  var camera = new THREE.OrthographicCamera(
+    (cameraSize * aspect) / -2,
+    (cameraSize * aspect) / 2,
+    cameraSize / 2,
+    cameraSize / -2,
+    1,
+    1000
+  );
+  camera.position.set(0, 50, 500);
+  // FIXME: look to the podium's position
+  camera.lookAt(scene.position);
+  cameras.push(camera);
+
   // set the default camera
   currentCamera = cameras[0];
 }
@@ -127,11 +140,11 @@ function onKeyDown(e) {
       break;
 
     case "Digit4":
-      // TODO: switch to top camera
+      currentCamera = cameras[0]
       break;
 
     case "Digit5":
-      // TODO: switch to side camera
+      currentCamera = cameras[1]
       break;
 
     // rotate
@@ -169,19 +182,22 @@ function rotation() {
 function onResize() {
   "use strict";
   renderer.setSize(window.innerWidth, window.innerHeight);
+  if (window.innerHeight > 0 && window.innerWidth > 0) {
+    var aspect = window.innerWidth / window.innerHeight;
+    for (let i = 0; i < cameras.length; i++) {
+      const camera = cameras[i];
 
-  // resize for OrthographicCamera
-  // if (window.innerHeight > 0 && window.innerWidth > 0) {
-  //   var aspect = window.innerWidth / window.innerHeight;
-  //   for (let i = 0; i < cameras.length; i++) {
-  //     const camera = cameras[i];
-  //     camera.left = (cameraSize * aspect) / -2;
-  //     camera.right = (cameraSize * aspect) / 2;
-  //     camera.top = cameraSize / 2;
-  //     camera.bottom = cameraSize / -2;
-  //     camera.updateProjectionMatrix();
-  //   }
-  // }
-
-  // TODO: add resize for PerspectiveCamera
+      // resize for OrthographicCamera
+      if (camera instanceof THREE.OrthographicCamera) {
+        camera.left = (cameraSize * aspect) / -2;
+        camera.right = (cameraSize * aspect) / 2;
+        camera.top = cameraSize / 2;
+        camera.bottom = cameraSize / -2;
+      }
+      else if (camera instanceof THREE.PerspectiveCamera) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+      }
+      camera.updateProjectionMatrix();
+    }
+  }
 }
