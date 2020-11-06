@@ -317,10 +317,13 @@ function createSpotlight(x, y, z, target) {
   var sphere = new THREE.Mesh(
     new THREE.SphereGeometry(10, 32, 32),
     new THREE.MeshBasicMaterial({ color: 0xFFc379 }))
+  sphere.userData = { oneMaterial: true }
 
   var cone = new THREE.Mesh(
     new THREE.ConeGeometry(10.5, 20, 16),
     new THREE.MeshBasicMaterial({ color: 0x98c379 }))
+  cone.userData = { oneMaterial: true }
+
   spotlight.add(sphere, cone)
   cone.rotateX(-Math.PI / 2)
   cone.position.set(0, 0, 10)
@@ -453,10 +456,30 @@ function onKeyDown(e) {
       globalLight.visible = !globalLight.visible
       break;
     case "KeyW":
-      // TODO: turn off/on calculate of illumination
+      scene.traverse(function (node) {
+        if (node instanceof THREE.Mesh) {
+          if (node.material instanceof THREE.MeshBasicMaterial) {
+            if (node.userData.oneMaterial == undefined)
+              node.material = node.userData.phong
+          }
+          else
+            node.material = node.userData.basic
+        }
+      });
       break;
     case "KeyE":
-      // TODO: switch between "Gouraud" and "Phong"
+      scene.traverse(function (node) {
+        if (node instanceof THREE.Mesh) {
+          if (node.material instanceof THREE.MeshLambertMaterial) {
+            if (node.userData.oneMaterial == undefined)
+              node.material = node.userData.phong
+          }
+          else if (node.material instanceof THREE.MeshPhongMaterial)
+            if (node.userData.oneMaterial == undefined)
+              node.material = node.userData.lambert
+        }
+      });
+      break;
       break;
   }
 }
