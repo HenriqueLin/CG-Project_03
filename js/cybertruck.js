@@ -8,12 +8,12 @@ var globalLight, spotlights = [];
 var podium, cybertruck;
 
 const cameraSize = 300, rotateSpeed = Math.PI / 3;
-const floorSize = 500, floorColor = 0xdcdfe4, floorShininess = 5;
-const podiumRadius = 100, podiumHeight = 30, podiumColor = 0xc678dd, podiumShininess = 10;
-const spotHeight = 100, spotDistance = 150;
-const spotlightIntensity = 1.5, spotlightDistance = 300, spotlightAngle = 0.5, spotlightColor = 0xffffff;
+const floorSize = 1500, floorColor = 0xdcdfe4, floorShininess = 5;
+const podiumRadius = 125, podiumHeight = 30, podiumColor = 0xc678dd, podiumShininess = 10;
+const spotHeight = 150, spotDistance = 200;
+const spotlightIntensity = 1.5, spotlightDistance = 350, spotlightAngle = 0.45, spotlightColor = 0xffffff;
 const globalLightColor = 0xffffff, globalLightIntensity = 0.5;
-const pCameraPosition = new THREE.Vector3(300, 300, 300), oCameraPosition = new THREE.Vector3(0, 50, 500);
+const pCameraPosition = new THREE.Vector3(-350, 350, 100), oCameraPosition = new THREE.Vector3(0, 30, 500);
 
 function createFloor() {
   "use strict";
@@ -305,9 +305,9 @@ function createTire(obj, x, y, z) {
 }
 
 function createSpotlights() {
-  createSpotlight(spotDistance, spotHeight, 0, podium)
-  createSpotlight(-Math.sin(Math.PI / 6) * spotDistance, spotHeight, Math.cos(Math.PI / 6) * spotDistance, podium)
-  createSpotlight(-Math.sin(Math.PI / 6) * spotDistance, spotHeight, -Math.cos(Math.PI / 6) * spotDistance, podium)
+  createSpotlight(spotDistance, spotHeight, 0, cybertruck)
+  createSpotlight(-Math.sin(Math.PI / 6) * spotDistance, spotHeight, Math.cos(Math.PI / 6) * spotDistance, cybertruck)
+  createSpotlight(-Math.sin(Math.PI / 6) * spotDistance, spotHeight, -Math.cos(Math.PI / 6) * spotDistance, cybertruck)
 
 }
 
@@ -367,20 +367,19 @@ function createCameras() {
   // PerspectiveCamera looking from top
   var camera = new THREE.PerspectiveCamera(45, aspect, 1, 1000);
   camera.position.copy(pCameraPosition);
-  camera.lookAt(scene.position);
+  camera.lookAt(cybertruck.position.clone().add(new THREE.Vector3(0, 20, 0)));
   cameras.push(camera);
   // OrthographicCamera looking from side
   var camera = new THREE.OrthographicCamera(
     (cameraSize * aspect) / -2,
     (cameraSize * aspect) / 2,
-    cameraSize / 2,
-    cameraSize / -2,
+    cameraSize / 2 + 50,
+    cameraSize / -2 + 50,
     1,
     1000
   );
   camera.position.copy(oCameraPosition);
-  // FIXME: look to the podium's position
-  camera.lookAt(scene.position);
+  camera.lookAt(cybertruck.position);
   cameras.push(camera);
 
   // set the default camera
@@ -515,8 +514,8 @@ function onResize() {
       if (camera instanceof THREE.OrthographicCamera) {
         camera.left = (cameraSize * aspect) / -2;
         camera.right = (cameraSize * aspect) / 2;
-        camera.top = cameraSize / 2;
-        camera.bottom = cameraSize / -2;
+        camera.top = cameraSize / 2 + 50;
+        camera.bottom = cameraSize / -2 + 50;
       }
       else if (camera instanceof THREE.PerspectiveCamera) {
         camera.aspect = window.innerWidth / window.innerHeight;
