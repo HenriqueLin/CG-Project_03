@@ -5,7 +5,7 @@ var scene,
 var keymap = {};
 var clock, delta_t;
 var globalLight, spotlights = [];
-var podium;
+var podium, cybertruck;
 
 const cameraSize = 300, rotateSpeed = Math.PI / 3;
 const floorSize = 500, floorColor = 0xdcdfe4, floorShininess = 5;
@@ -39,7 +39,7 @@ function createPodium() {
     new THREE.CylinderGeometry(podiumRadius, podiumRadius, podiumHeight, 32, 32),
     phong)
   mesh.userData = { basic: basic, lambert: lambert, phong: phong }
-  mesh.position.set(0, podiumHeight / 2, 0)
+  podium.position.set(0, podiumHeight / 2, 0)
   podium.add(mesh)
   scene.add(podium)
 }
@@ -47,6 +47,261 @@ function createPodium() {
 function createCybertruck() {
   "use strict";
   // TODO: chassis, body, window
+  cybertruck = new THREE.Object3D();
+  createTires(cybertruck)
+  createChassis(cybertruck)
+  createBody(cybertruck)
+  createWindows(cybertruck)
+  createFrontlight(cybertruck)
+  createBacklight(cybertruck)
+  cybertruck.position.set(0, podiumHeight / 2, 0)
+  podium.add(cybertruck)
+}
+
+function createBacklight(obj) {
+  var geometry = new THREE.Geometry()
+  var basic = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0xff0000 })
+  var phong = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: 0x330000, shininess: 30 })
+
+  geometry.vertices.push(
+    new THREE.Vector3(-117, 49, 39), // 0 (13)
+    new THREE.Vector3(-117, 53, 39), // 1 (14)
+
+    new THREE.Vector3(-117, 49, -39), // 2 (16)
+    new THREE.Vector3(-117, 53, -39), // 3 (17)
+
+  )
+  geometry.faces.push(
+    new THREE.Face3(0, 1, 2),
+    new THREE.Face3(1, 3, 2),
+
+  )
+  geometry.computeFaceNormals()
+  var mesh = new THREE.Mesh(geometry, phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
+  obj.add(mesh)
+}
+
+function createFrontlight(obj) {
+  var geometry = new THREE.Geometry()
+  var basic = new THREE.MeshBasicMaterial({ color: 0xffffff })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0xffffff })
+  var phong = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xaaaaaa, shininess: 30 })
+
+  geometry.vertices.push(
+    new THREE.Vector3(114, 42, 29), // 0 (2)
+    new THREE.Vector3(106, 43, 39), // 1 (3)
+    new THREE.Vector3(114, 42, -29), // 2 (6)
+    new THREE.Vector3(106, 43, -39), // 3 (7)
+
+    new THREE.Vector3(106, 46, 39), // 4 (8)
+    new THREE.Vector3(114, 44, 29), // 5 (9)
+    new THREE.Vector3(106, 46, -39), // 6 (10)
+    new THREE.Vector3(114, 44, -29), // 7 (11)
+
+  )
+  geometry.faces.push(
+    new THREE.Face3(1, 0, 4),
+    new THREE.Face3(4, 0, 5),
+    new THREE.Face3(5, 0, 2),
+    new THREE.Face3(5, 2, 7),
+    new THREE.Face3(2, 3, 6),
+    new THREE.Face3(2, 6, 7),
+
+  )
+  geometry.computeFaceNormals()
+  var mesh = new THREE.Mesh(geometry, phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
+  obj.add(mesh)
+}
+
+function createWindows(obj) {
+  var geometry = new THREE.Geometry()
+  var basic = new THREE.MeshBasicMaterial({ color: 0x141414 })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0x141414 })
+  var phong = new THREE.MeshPhongMaterial({ color: 0x141414, shininess: 250 })
+
+  geometry.vertices.push(
+    new THREE.Vector3(74, 54, 34), // 0 (20)
+    new THREE.Vector3(74, 54, -34), // 1 (21)
+    new THREE.Vector3(18, 68, 31), // 2 (22)
+    new THREE.Vector3(18, 68, -31), // 3 (23)
+
+    new THREE.Vector3(10, 66, -34.14), // 4 (25)
+    new THREE.Vector3(74, 50, -38.14), // 5 (27)
+    new THREE.Vector3(-40, 60, -36.31), // 6 (29)
+    new THREE.Vector3(-40, 54, -38.02), // 7 (31)
+
+    new THREE.Vector3(10, 66, 34.14), // 8 (24)
+    new THREE.Vector3(74, 50, 38.14), // 9 (26)
+    new THREE.Vector3(-40, 60, 36.31), // 10 (28)
+    new THREE.Vector3(-40, 54, 38.02), // 11 (30)
+
+  )
+  geometry.faces.push(
+    new THREE.Face3(0, 1, 3),
+    new THREE.Face3(0, 3, 2),
+
+    new THREE.Face3(5, 7, 4),
+    new THREE.Face3(4, 7, 6),
+
+    new THREE.Face3(9, 8, 11),
+    new THREE.Face3(8, 10, 11),
+  )
+  geometry.computeFaceNormals()
+  var mesh = new THREE.Mesh(geometry, phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
+  obj.add(mesh)
+}
+
+function createBody(obj) {
+  var geometry = new THREE.Geometry()
+  var basic = new THREE.MeshBasicMaterial({ color: 0x9c9c9c })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0x9c9c9c })
+  var phong = new THREE.MeshPhongMaterial({ color: 0x9c9c9c, specular: 0x333333, shininess: 30 })
+  geometry.vertices.push(
+    // front
+    new THREE.Vector3(106, 32, 39), // 0
+    new THREE.Vector3(114, 32, 29), // 1
+    new THREE.Vector3(114, 42, 29), // 2
+    new THREE.Vector3(106, 43, 39), // 3
+    new THREE.Vector3(106, 32, -39), // 4
+    new THREE.Vector3(114, 32, -29), // 5
+    new THREE.Vector3(114, 42, -29), // 6
+    new THREE.Vector3(106, 43, -39), // 7
+
+    new THREE.Vector3(106, 46, 39), // 8
+    new THREE.Vector3(114, 44, 29), // 9
+    new THREE.Vector3(106, 46, -39), // 10
+    new THREE.Vector3(114, 44, -29), // 11
+
+    new THREE.Vector3(-116, 32, 39), // 12
+    new THREE.Vector3(-117, 49, 39), // 13
+    new THREE.Vector3(-117, 53, 39), // 14
+
+    new THREE.Vector3(-116, 32, -39), // 15
+    new THREE.Vector3(-117, 49, -39), // 16
+    new THREE.Vector3(-117, 53, -39), // 17
+
+    new THREE.Vector3(10, 70, 33), // 18
+    new THREE.Vector3(10, 70, -33), // 19
+
+    new THREE.Vector3(74, 54, 34), // 20
+    new THREE.Vector3(74, 54, -34), // 21
+
+    new THREE.Vector3(18, 68, 31), // 22
+    new THREE.Vector3(18, 68, -31), // 23
+
+    new THREE.Vector3(10, 66, 34.14), // 24
+    new THREE.Vector3(10, 66, -34.14), // 25
+
+    new THREE.Vector3(74, 50, 38.14), // 26
+    new THREE.Vector3(74, 50, -38.14), // 27
+
+    new THREE.Vector3(-40, 60, 36.31), // 28
+    new THREE.Vector3(-40, 60, -36.31), // 29
+
+    new THREE.Vector3(-40, 54, 38.02), // 30
+    new THREE.Vector3(-40, 54, -38.02), // 31
+  )
+  geometry.faces.push(
+    new THREE.Face3(0, 1, 2),
+    new THREE.Face3(0, 2, 3),
+
+    new THREE.Face3(4, 6, 5),
+    new THREE.Face3(4, 7, 6),
+
+    new THREE.Face3(4, 1, 0),
+    new THREE.Face3(4, 5, 1),
+    new THREE.Face3(1, 5, 2),
+    new THREE.Face3(2, 5, 6),
+
+    new THREE.Face3(8, 9, 10),
+    new THREE.Face3(9, 11, 10),
+
+    new THREE.Face3(0, 13, 12),
+    new THREE.Face3(0, 3, 13),
+    new THREE.Face3(13, 3, 8),
+    new THREE.Face3(13, 8, 14),
+
+    new THREE.Face3(4, 15, 16),
+    new THREE.Face3(4, 16, 7),
+    new THREE.Face3(16, 10, 7),
+    new THREE.Face3(16, 17, 10),
+
+    new THREE.Face3(15, 12, 13),
+    new THREE.Face3(15, 13, 16),
+
+    new THREE.Face3(10, 27, 19),
+    new THREE.Face3(10, 17, 27),
+    new THREE.Face3(27, 25, 19),
+    new THREE.Face3(19, 25, 29),
+    new THREE.Face3(19, 29, 17),
+    new THREE.Face3(29, 31, 17),
+    new THREE.Face3(31, 27, 17),
+
+    new THREE.Face3(8, 18, 26),
+    new THREE.Face3(26, 18, 24),
+    new THREE.Face3(8, 26, 14),
+    new THREE.Face3(18, 28, 24),
+    new THREE.Face3(18, 14, 28),
+    new THREE.Face3(28, 14, 30),
+    new THREE.Face3(30, 14, 26),
+
+    new THREE.Face3(19, 17, 18),
+    new THREE.Face3(18, 17, 14),
+
+    new THREE.Face3(20, 8, 10),
+    new THREE.Face3(20, 10, 21),
+
+    new THREE.Face3(18, 22, 23),
+    new THREE.Face3(18, 23, 19),
+
+    new THREE.Face3(20, 18, 8),
+    new THREE.Face3(20, 22, 18),
+
+    new THREE.Face3(21, 19, 23),
+    new THREE.Face3(21, 10, 19),
+
+  )
+
+  geometry.computeFaceNormals()
+  var mesh = new THREE.Mesh(geometry, phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
+  obj.add(mesh)
+}
+
+function createChassis(obj) {
+  var basic = new THREE.MeshBasicMaterial({ color: 0x9c9c9c })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0x9c9c9c })
+  var phong = new THREE.MeshPhongMaterial({ color: 0x9c9c9c, specular: 0x333333, shininess: 30 })
+  var geometry = new THREE.BoxGeometry(222, 14, 78)
+
+  var mesh = new THREE.Mesh(geometry, phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
+  mesh.position.set(-5, 25, 0)
+  obj.add(mesh)
+}
+
+function createTires(obj) {
+  createTire(obj, 76, 20, 35)
+  createTire(obj, -76, 20, 35)
+  createTire(obj, 76, 20, -35)
+  createTire(obj, -76, 20, -35)
+}
+
+function createTire(obj, x, y, z) {
+  var basic = new THREE.MeshBasicMaterial({ color: 0x282c34 })
+  var lambert = new THREE.MeshLambertMaterial({ color: 0x282c34 })
+  var phong = new THREE.MeshPhongMaterial({ color: 0x282c34, shininess: 1 })
+  var geometry = new THREE.CylinderGeometry(20, 20, 10, 32, 32)
+
+  var mesh = new THREE.Mesh(geometry, phong)
+  mesh.userData = { basic: basic, lambert: lambert, phong: phong }
+  mesh.position.set(x, y, z)
+  mesh.rotateX(Math.PI / 2)
+  obj.add(mesh)
 }
 
 function createSpotlights() {
@@ -58,7 +313,6 @@ function createSpotlights() {
 
 function createSpotlight(x, y, z, target) {
   "use strict";
-  // TODO:
   var spotlight = new THREE.Object3D();
   var sphere = new THREE.Mesh(
     new THREE.SphereGeometry(10, 32, 32),
@@ -73,7 +327,6 @@ function createSpotlight(x, y, z, target) {
   spotlight.position.set(x, y, z)
   spotlight.lookAt(target.position)
   var light = new THREE.SpotLight(spotlightColor, spotlightIntensity, spotlightDistance, spotlightAngle)
-  scene.add(new THREE.SpotLightHelper(light))
   light.lookAt(target.position)
   spotlight.add(light)
   spotlights.push(light)
@@ -99,8 +352,8 @@ function createScene() {
 
   createFloor();
   createGlobalLight();
-  // TODO: add cybertruck
   createPodium();
+  createCybertruck();
   createSpotlights();
 }
 
