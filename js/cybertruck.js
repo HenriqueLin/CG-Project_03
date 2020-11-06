@@ -46,7 +46,6 @@ function createPodium() {
 
 function createCybertruck() {
   "use strict";
-  // TODO: chassis, body, window
   cybertruck = new THREE.Object3D();
   createTires(cybertruck)
   createChassis(cybertruck)
@@ -360,7 +359,6 @@ function createScene() {
   createSpotlights();
 }
 
-
 function createCameras() {
   "use strict";
   var aspect = window.innerWidth / window.innerHeight;
@@ -385,7 +383,6 @@ function createCameras() {
   // set the default camera
   currentCamera = cameras[0];
 }
-
 
 function render() {
   "use strict";
